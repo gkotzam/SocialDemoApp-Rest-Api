@@ -39,13 +39,12 @@ func createTables() {
 	}
 
 	createPostsTable := `
-	-- Table: posts
-	CREATE TABLE posts (
+	CREATE TABLE IF NOT EXISTS posts (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		title VARCHAR(255) NOT NULL,
 		postText TEXT NOT NULL,
-		createdAt DATETIME NOT NULL,
 		userId INT NOT NULL,
+		createdAt DATETIME NOT NULL,
 		FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 		);
 	`
