@@ -35,6 +35,24 @@ func createTables() {
 	_, err := DB.Exec(createUsersTable)
 
 	if err != nil {
-		panic("Could not create events table.")
+		panic("Could not create users table.")
 	}
+
+	createPostsTable := `
+	-- Table: posts
+	CREATE TABLE posts (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		title VARCHAR(255) NOT NULL,
+		postText TEXT NOT NULL,
+		createdAt DATETIME NOT NULL,
+		userId INT NOT NULL,
+		FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+		);
+	`
+	_, err = DB.Exec(createPostsTable)
+
+	if err != nil {
+		panic("Could not create posts table.")
+	}
+
 }
