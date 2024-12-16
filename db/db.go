@@ -25,11 +25,11 @@ func InitDB() {
 func createTables() {
 	createUsersTable := `
 	CREATE TABLE IF NOT EXISTS users (
-		id INT AUTO_INCREMENT PRIMARY KEY,
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		username VARCHAR(255) NOT NULL,
 		email VARCHAR(255) NOT NULL UNIQUE,
 		password VARCHAR(255) NOT NULL,
-		createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+		createdAt DATETIME NOT NULL
 		);
 	`
 	_, err := DB.Exec(createUsersTable)
