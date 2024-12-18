@@ -43,7 +43,7 @@ func createTables() {
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		title VARCHAR(255) NOT NULL,
 		postText TEXT NOT NULL,
-		userId INT NOT NULL,
+		userId INTEGER NOT NULL,
 		createdAt DATETIME NOT NULL,
 		FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 		);
@@ -52,6 +52,24 @@ func createTables() {
 
 	if err != nil {
 		panic("Could not create posts table.")
+	}
+
+	createCommentsTable := `
+	CREATE TABLE IF NOT EXISTS comments (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		commentText TEXT NOT NULL,
+		postId INTEGER NOT NUL,
+		userId INTEGER NOT NULL,
+		createdAt DATETIME NOT NULL,
+		FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+  		FOREIGN KEY (postId) REFERENCES posts(id) ON DELETE CASCADE
+		);
+	`
+
+	_, err = DB.Exec(createCommentsTable)
+
+	if err != nil {
+		panic("Could not create comments table.")
 	}
 
 }
