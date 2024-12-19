@@ -23,6 +23,12 @@ func RegisterRoutes(server *gin.Engine) {
 	// POST => /posts/:postId/comments
 	server.POST("/posts/:postId/comments", createComment)
 
+	// ---- PUT ----
+	// PUT => /posts/:id
+	server.PUT("/posts/:id", updatePost)
+	// PUT => /comments/:id
+	server.PUT("/comments/:id", updateComment)
+
 	// ---- DELETE ----
 	// DELETE => /posts
 	server.DELETE("/posts/:id", deletePost)

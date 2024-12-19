@@ -63,6 +63,27 @@ func (p Post) Delete() error {
 	return nil
 }
 
+func (p Post) Update() error {
+	query := `
+	UPDATE posts
+	SET title = ?, postText = ? 
+	WHERE id = ?`
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(p.Title, p.PostText, p.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (c *Comment) Save() error {
 	query := `INSERT INTO comments(commentText, postId, userId, createdAt)
 	VALUES (?,?,?,?)`
@@ -78,6 +99,27 @@ func (c *Comment) Save() error {
 
 	return err
 
+}
+
+func (c Comment) Update() error {
+	query := `
+	UPDATE comments
+	SET commentText = ?
+	WHERE id = ?`
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(c.CommentText, c.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (c Comment) Delete() error {
