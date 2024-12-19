@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/gkotzam/SocialDemoApp-Rest-Api/db"
+	"github.com/gkotzam/SocialDemoApp-Rest-Api/utils"
 )
 
 type User struct {
@@ -23,9 +24,15 @@ func (u *User) Save() error {
 		return err
 	}
 
+	hashedPassword, err := utils.HashPassword(u.Password)
+
+	if err != nil {
+		return err
+	}
+
 	defer stmt.Close()
 
-	_, err = stmt.Exec(u.Username, u.Email, u.Password, u.CreatedAt)
+	_, err = stmt.Exec(u.Username, u.Email, hashedPassword, u.CreatedAt)
 
 	return err
 }
