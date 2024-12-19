@@ -65,7 +65,25 @@ func GetPostById(id int64) (*Post, error) {
 		return nil, err
 	}
 
+	post.Comments, err = GetCommentsByPostId(post.ID)
+	if err != nil {
+		return nil, err
+	}
+
 	return &post, nil
+}
+
+func GetCommentById(id int64) (*Comment, error) {
+	query := "SELECT * FROM comments WHERE id = ?"
+	row := db.DB.QueryRow(query, id)
+
+	var comment Comment
+	err := row.Scan(&comment.ID, &comment.CommentText, &comment.PostId, &comment.UserId, &comment.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+
+	return &comment, nil
 }
 
 func GetAllPosts() ([]Post, error) {
@@ -84,9 +102,36 @@ func GetAllPosts() ([]Post, error) {
 		if err != nil {
 			return nil, err
 		}
+		post.Comments, err = GetCommentsByPostId(post.ID)
+		if err != nil {
+			return nil, err
+		}
 		posts = append(posts, post)
 	}
 
 	return posts, nil
+
+}
+
+func GetCommentsByPostId(id int64) ([]Comment, error) {
+	query := "SELECT * FROM comments WHERE postId = ?"
+	rows, err := db.DB.Query(query, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var comments []Comment
+
+	for rows.Next() {
+		var comment Comment
+		err := rows.Scan(&comment.ID, &comment.CommentText, &comment.PostId, &comment.UserId, &comment.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		comments = append(comments, comment)
+	}
+
+	return comments, nil
 
 }

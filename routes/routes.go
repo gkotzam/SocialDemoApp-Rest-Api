@@ -20,4 +20,8 @@ func RegisterRoutes(server *gin.Engine) {
 	server.POST("/posts", createPost)
 	// POST => /posts/:postId/comments
 	server.POST("/posts/:postId/comments", createComment)
+
+	// ---- DELETE ----
+	// DELETE -> /posts
+
 }
