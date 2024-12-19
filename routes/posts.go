@@ -93,6 +93,30 @@ func deletePost(context *gin.Context) {
 
 }
 
+func deleteComment(context *gin.Context) {
+	commentId, err := strconv.ParseInt(context.Param("id"), 10, 64)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could parse comment id."})
+		return
+	}
+
+	comment, err := models.GetCommentById(commentId)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch comment. Try again later."})
+		return
+	}
+
+	err = comment.Delete()
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not delete Comment."})
+		return
+	}
+
+	context.JSON(http.StatusCreated, gin.H{"message": "Comment Deleted!"})
+
+}
+
 func getPost(context *gin.Context) {
 	postId, err := strconv.ParseInt(context.Param("id"), 10, 64)
 	if err != nil {
@@ -107,6 +131,23 @@ func getPost(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, post)
+
+}
+
+func getComment(context *gin.Context) {
+	commentId, err := strconv.ParseInt(context.Param("id"), 10, 64)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could parse comment id."})
+		return
+	}
+
+	comment, err := models.GetCommentById(commentId)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch comment. Try again later."})
+		return
+	}
+
+	context.JSON(http.StatusOK, comment)
 
 }
 

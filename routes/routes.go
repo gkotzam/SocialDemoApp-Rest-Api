@@ -10,6 +10,8 @@ func RegisterRoutes(server *gin.Engine) {
 	server.GET("/posts", getPosts)
 	// GET => /posts/:id
 	server.GET("/posts/:id", getPost)
+	// GET => /comments/:id
+	server.GET("/comments/:id", getComment)
 
 	// ---- POST ----
 	// POST => /signup
@@ -24,5 +26,7 @@ func RegisterRoutes(server *gin.Engine) {
 	// ---- DELETE ----
 	// DELETE => /posts
 	server.DELETE("/posts/:id", deletePost)
+	// DELETE => /comments
+	server.DELETE("/comments/:id", deleteComment)
 
 }
