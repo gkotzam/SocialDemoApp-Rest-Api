@@ -12,6 +12,15 @@ type Post struct {
 	PostText  string `binding:"required"`
 	UserId    int64
 	CreatedAt time.Time
+	Comments  []Comment
+}
+
+type Comment struct {
+	ID          int64
+	CommentText string `binding:"required"`
+	PostId      int64
+	UserId      int64
+	CreatedAt   time.Time
 }
 
 func (p *Post) Save() error {
@@ -27,6 +36,23 @@ func (p *Post) Save() error {
 	_, err = stmt.Exec(p.Title, p.PostText, p.CreatedAt, p.UserId)
 
 	return err
+}
+
+func (c *Comment) Save() error {
+	query := `INSERT INTO comments(commentText, postId, userId, createdAt)
+	VALUES (?,?,?,?)`
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(c.CommentText, c.PostId, c.UserId, c.CreatedAt)
+
+	return err
+
 }
 
 func GetPostById(id int64) (*Post, error) {
