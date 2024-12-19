@@ -38,6 +38,31 @@ func (p *Post) Save() error {
 	return err
 }
 
+func (p Post) Delete() error {
+	query := "DELETE FROM posts WHERE id = ?"
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	for _, comment := range p.Comments {
+		err = comment.Delete()
+		if err != nil {
+			return err
+		}
+
+	}
+
+	_, err = stmt.Exec(p.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (c *Comment) Save() error {
 	query := `INSERT INTO comments(commentText, postId, userId, createdAt)
 	VALUES (?,?,?,?)`
@@ -53,6 +78,23 @@ func (c *Comment) Save() error {
 
 	return err
 
+}
+
+func (c Comment) Delete() error {
+	query := "DELETE FROM comments WHERE id = ?"
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(c.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func GetPostById(id int64) (*Post, error) {

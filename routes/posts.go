@@ -69,6 +69,30 @@ func createComment(context *gin.Context) {
 
 }
 
+func deletePost(context *gin.Context) {
+	PostId, err := strconv.ParseInt(context.Param("id"), 10, 64)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could parse Post id."})
+		return
+	}
+
+	post, err := models.GetPostById(PostId)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch Post. Try again later."})
+		return
+	}
+
+	err = post.Delete()
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not delete Post."})
+		return
+	}
+
+	context.JSON(http.StatusCreated, gin.H{"message": "Post Deleted!"})
+
+}
+
 func getPost(context *gin.Context) {
 	postId, err := strconv.ParseInt(context.Param("id"), 10, 64)
 	if err != nil {
