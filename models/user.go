@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/gkotzam/SocialDemoApp-Rest-Api/db"
@@ -9,7 +10,7 @@ import (
 
 type User struct {
 	ID        int64
-	Username  string `binding:"required"`
+	Username  string
 	Email     string `binding:"required"`
 	Password  string `binding:"required"`
 	CreatedAt time.Time
@@ -32,9 +33,34 @@ func (u *User) Save() error {
 
 	defer stmt.Close()
 
+	// Default username
+	if u.Username == "" {
+		u.Username = "user"
+	}
+
 	_, err = stmt.Exec(u.Username, u.Email, hashedPassword, u.CreatedAt)
 
 	return err
+}
+
+func (u *User) ValidateCredentials() error {
+	query := "SELECT id, password FROM users WHERE email = ?"
+	row := db.DB.QueryRow(query, u.Email)
+
+	var storedPassword string
+	err := row.Scan(&u.ID, &storedPassword)
+
+	if err != nil {
+		return err
+	}
+
+	passwordIsValid := utils.CheckPasswordHash(u.Password, storedPassword)
+
+	if !passwordIsValid {
+		return errors.New("credentials Invalid")
+	}
+
+	return nil
 }
 
 // Returns all saved users ([]User) from Database

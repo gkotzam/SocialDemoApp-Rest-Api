@@ -17,7 +17,7 @@ func RegisterRoutes(server *gin.Engine) {
 	// POST => /signup
 	server.POST("/signup", signup)
 	// POST => /login
-	// server.POST("/login")
+	server.POST("/login", login)
 	// POST => /posts
 	server.POST("/posts", createPost)
 	// POST => /posts/:postId/comments
