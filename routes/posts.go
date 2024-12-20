@@ -18,8 +18,7 @@ func createPost(context *gin.Context) {
 		return
 	}
 
-	// TODO: after login get userID
-	post.UserId = 1 // temp
+	post.UserId = context.GetInt64("userId")
 	post.CreatedAt = time.Now().UTC()
 
 	err = post.Save()
@@ -54,8 +53,7 @@ func createComment(context *gin.Context) {
 		return
 	}
 
-	// TODO: after login get userID
-	comment.UserId = 1 // temp
+	comment.UserId = context.GetInt64("userId")
 	comment.PostId = postId
 	comment.CreatedAt = time.Now().UTC()
 
@@ -76,10 +74,16 @@ func deletePost(context *gin.Context) {
 		return
 	}
 
+	userId := context.GetInt64("userId")
 	post, err := models.GetPostById(PostId)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch Post. Try again later."})
+		return
+	}
+
+	if post.UserId != userId {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized to delete post."})
 		return
 	}
 
@@ -100,10 +104,17 @@ func deleteComment(context *gin.Context) {
 		return
 	}
 
+	userId := context.GetInt64("userId")
 	comment, err := models.GetCommentById(commentId)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch comment. Try again later."})
+		return
+	}
+
+	if comment.UserId != userId && comment.PostId != userId {
+		// user is not comment creator or post creator
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized to delete comment."})
 		return
 	}
 
@@ -124,10 +135,16 @@ func updatePost(context *gin.Context) {
 		return
 	}
 
-	_, err = models.GetPostById(postId)
+	userId := context.GetInt64("userId")
+	post, err := models.GetPostById(postId)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch post. Try again later."})
+		return
+	}
+
+	if post.UserId != userId {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized to update post."})
 		return
 	}
 
@@ -156,10 +173,16 @@ func updateComment(context *gin.Context) {
 		return
 	}
 
-	_, err = models.GetCommentById(commentId)
+	userId := context.GetInt64("userId")
+	comment, err := models.GetCommentById(commentId)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch comment. Try again later."})
+		return
+	}
+
+	if comment.UserId != userId {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized to update comment."})
 		return
 	}
 
